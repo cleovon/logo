@@ -13,11 +13,7 @@ var levelMapper = map[string]zapcore.Level{
 	"FATAL":   zap.FatalLevel,
 }
 
-type Logger struct {
-	logger *zap.Logger
-}
-
-func New(level string, initialFields ...map[string]interface{}) *Logger {
+func New(level string, initialFields ...map[string]interface{}) *zap.Logger {
 
 	levelLog, ok := levelMapper[level]
 	if !ok {
@@ -48,59 +44,12 @@ func New(level string, initialFields ...map[string]interface{}) *Logger {
 		config.InitialFields = initialFields[0]
 	}
 
-	return &Logger{
-		logger: zap.Must(config.Build()),
-	}
+	return zap.Must(config.Build())
 }
 
-func (l Logger) Info(msg string, fields ...map[string]interface{}) {
-	if len(fields) == 0 {
-		l.logger.Info(msg)
-	} else {
-		l.logger.Info(msg, fieldsZap(fields[0])...)
-	}
-}
-
-func (l Logger) Debug(msg string, fields ...map[string]interface{}) {
-	if len(fields) == 0 {
-		l.logger.Debug(msg)
-	} else {
-		l.logger.Debug(msg, fieldsZap(fields[0])...)
-	}
-}
-
-func (l Logger) Error(msg string, fields ...map[string]interface{}) {
-	if len(fields) == 0 {
-		l.logger.Error(msg)
-	} else {
-		l.logger.Error(msg, fieldsZap(fields[0])...)
-	}
-}
-
-func (l Logger) Warning(msg string, fields ...map[string]interface{}) {
-	if len(fields) == 0 {
-		l.logger.Warn(msg)
-	} else {
-		l.logger.Warn(msg, fieldsZap(fields[0])...)
-	}
-}
-
-func (l Logger) Fatal(msg string, fields ...map[string]interface{}) {
-	if len(fields) == 0 {
-		l.logger.Fatal(msg)
-	} else {
-		l.logger.Fatal(msg, fieldsZap(fields[0])...)
-	}
-}
-
-func (l Logger) Close() {
-	l.logger.Sync()
-}
-
-func fieldsZap(fields map[string]interface{}) (zapFields []zapcore.Field) {
+func MapFields(fields map[string]interface{}) (zapFields []zapcore.Field) {
 	for k, v := range fields {
 		zapFields = append(zapFields, zapcore.Field{Key: k, Interface: v})
 	}
-
 	return
 }
