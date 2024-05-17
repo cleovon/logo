@@ -13,11 +13,11 @@ var levelMapper = map[string]zapcore.Level{
 	"FATAL":   zap.FatalLevel,
 }
 
-type logger struct {
+type Logger struct {
 	logger *zap.Logger
 }
 
-func New(level string, initialFields ...map[string]interface{}) *logger {
+func New(level string, initialFields ...map[string]interface{}) *Logger {
 
 	levelLog, ok := levelMapper[level]
 	if !ok {
@@ -48,12 +48,12 @@ func New(level string, initialFields ...map[string]interface{}) *logger {
 		config.InitialFields = initialFields[0]
 	}
 
-	return &logger{
+	return &Logger{
 		logger: zap.Must(config.Build()),
 	}
 }
 
-func (l logger) Info(msg string, fields ...map[string]interface{}) {
+func (l Logger) Info(msg string, fields ...map[string]interface{}) {
 	if len(fields) == 0 {
 		l.logger.Info(msg)
 	} else {
@@ -61,7 +61,7 @@ func (l logger) Info(msg string, fields ...map[string]interface{}) {
 	}
 }
 
-func (l logger) Debug(msg string, fields ...map[string]interface{}) {
+func (l Logger) Debug(msg string, fields ...map[string]interface{}) {
 	if len(fields) == 0 {
 		l.logger.Debug(msg)
 	} else {
@@ -69,7 +69,7 @@ func (l logger) Debug(msg string, fields ...map[string]interface{}) {
 	}
 }
 
-func (l logger) Error(msg string, fields ...map[string]interface{}) {
+func (l Logger) Error(msg string, fields ...map[string]interface{}) {
 	if len(fields) == 0 {
 		l.logger.Error(msg)
 	} else {
@@ -77,7 +77,7 @@ func (l logger) Error(msg string, fields ...map[string]interface{}) {
 	}
 }
 
-func (l logger) Warning(msg string, fields ...map[string]interface{}) {
+func (l Logger) Warning(msg string, fields ...map[string]interface{}) {
 	if len(fields) == 0 {
 		l.logger.Warn(msg)
 	} else {
@@ -85,7 +85,7 @@ func (l logger) Warning(msg string, fields ...map[string]interface{}) {
 	}
 }
 
-func (l logger) Fatal(msg string, fields ...map[string]interface{}) {
+func (l Logger) Fatal(msg string, fields ...map[string]interface{}) {
 	if len(fields) == 0 {
 		l.logger.Fatal(msg)
 	} else {
@@ -93,7 +93,7 @@ func (l logger) Fatal(msg string, fields ...map[string]interface{}) {
 	}
 }
 
-func (l logger) Close() {
+func (l Logger) Close() {
 	l.logger.Sync()
 }
 
