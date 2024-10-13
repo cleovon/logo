@@ -1,6 +1,6 @@
 module github.com/cleovon/logo
 
-go 1.22.1
+go 1.23.2
 
 require go.uber.org/zap v1.27.0
 
