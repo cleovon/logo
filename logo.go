@@ -1,6 +1,8 @@
 package logo
 
 import (
+	"context"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -12,6 +14,8 @@ var levelMapper = map[string]zapcore.Level{
 	"ERROR":   zap.ErrorLevel,
 	"FATAL":   zap.FatalLevel,
 }
+
+type ctxKey struct{}
 
 func New(level string, initialFields ...map[string]interface{}) *zap.Logger {
 
@@ -52,4 +56,24 @@ func MapFields(fields map[string]interface{}) (zapFields []zapcore.Field) {
 		zapFields = append(zapFields, zapcore.Field{Key: k, Interface: v})
 	}
 	return
+}
+
+func FromCtx(ctx context.Context) *zap.Logger {
+	if l, ok := ctx.Value(ctxKey{}).(*zap.Logger); ok {
+		return l
+	} else if l := New(""); l != nil {
+		return l
+	}
+
+	return zap.NewNop()
+}
+
+func WithCtx(ctx context.Context, l *zap.Logger) context.Context {
+	if lp, ok := ctx.Value(ctxKey{}).(*zap.Logger); ok {
+		if lp == l {
+			return ctx
+		}
+	}
+
+	return context.WithValue(ctx, ctxKey{}, l)
 }
